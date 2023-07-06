@@ -1,3 +1,6 @@
+using BuberBreakfast.ServiceErrors;
+using ErrorOr;
+
 namespace BuberBreakfast.Models;
 
 public class BreakfastService : IBreakfastService{
@@ -8,8 +11,20 @@ public class BreakfastService : IBreakfastService{
         _breakfasts.Add(breakfast.Id, breakfast);
     }
 
-    public Breakfast GetBreakfast(Guid id)
+    public void DeleteBreakfast(Guid id)
     {
-        return _breakfasts[id];
+        _breakfasts.Remove(id);
+    }
+
+    public ErrorOr<Breakfast> GetBreakfast(Guid id)
+    {
+        if(_breakfasts.TryGetValue(id, out var breakfast))
+            return breakfast;
+        return Errors.Breakfast.NotFound;
+    }
+
+    public void UpsertBreakfast(Breakfast breakfast)
+    {
+        _breakfasts[breakfast.Id] = breakfast;
     }
 }
